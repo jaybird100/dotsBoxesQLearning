@@ -55,8 +55,10 @@ public class GameBoard{
             graph = new Graph(h, w, frame);
             graph.createGraph();
         }
-        gameThread thread = new gameThread();
-        thread.start();
+        if(!Graph.simMode) {
+            gameThread thread = new gameThread();
+            thread.start();
+        }
     }
 
 }

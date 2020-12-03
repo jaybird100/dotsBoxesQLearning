@@ -8,7 +8,7 @@ import static game.gameThread.checkBox;
 import static game.gameThread.checkMatching;
 
 public class randomBot {
-    double epsilon = 0.3;
+    double epsilon = 0.0;
     // places edges randomly except will always complete a box and won't set up boxes for the other player
     public randomBot(){}
     // places the edge
@@ -36,7 +36,7 @@ public class randomBot {
             chosen=(int)(Math.random()*Graph.getAvailableLines().size());
         }
         ELine line = Graph.getAvailableLines().get(chosen);
-        System.out.println("RChosen: "+line.vertices.get(0).id+"--"+line.vertices.get(1).id);
+     //   System.out.println("RChosen: "+line.vertices.get(0).id+"--"+line.vertices.get(1).id);
         line.setActivated(true);
         // make it black
         line.setBackground(Color.RED);

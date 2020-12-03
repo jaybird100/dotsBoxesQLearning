@@ -1,14 +1,33 @@
 package Neural;
 
+import game.ELine;
+import game.Graph;
+import game.scoreBox;
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 
-public class testState implements Encodable {
+import java.util.ArrayList;
+import java.util.List;
+
+public class testState implements Encodable{
     int[][] matrix;
-    int step;
-    public testState(int[][] m,int step){
+    int botScore;
+    int otherPlayerScore;
+    int numMoves;
+    ArrayList<ELine> availLines;
+    boolean botTurn;
+    ArrayList<scoreBox> countBoxes;
+    List<Graph.Edge> edgeList;
+    public testState(int[][] m,int b,int op,int nm,ArrayList<ELine> av,boolean bt,ArrayList<scoreBox> cb,List<Graph.Edge> eL){
         matrix=m;
-        this.step=step;
+        botScore=b;
+        otherPlayerScore=op;
+        numMoves=nm;
+        availLines=av;
+        botTurn=bt;
+        countBoxes=cb;
+        edgeList=eL;
     }
     @Override
     public double[] toArray() {
@@ -30,11 +49,16 @@ public class testState implements Encodable {
 
     @Override
     public INDArray getData() {
-        return null;
+        return Nd4j.create(toArray());
     }
 
     @Override
     public Encodable dup() {
-        return null;
+        return new testState(matrix.clone(),botScore,otherPlayerScore,numMoves,availLines,botTurn,countBoxes,edgeList);
     }
+
+    public String toString(){
+        return "Score: "+botScore+":"+otherPlayerScore+". Num moves: "+numMoves+" availLines size: "+availLines.size()+" botTurn: "+botTurn;
+    }
+
 }

@@ -2,6 +2,7 @@ package game;
 
 import game.Q.QLearning;
 import game.Q.QLearning2;
+import org.deeplearning4j.rl4j.policy.DQNPolicy;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -16,9 +17,11 @@ public class Graph {
     public static void setNumOfMoves(int numOfMoves) {
         Graph.numOfMoves = numOfMoves;
     }
-
+    static int gamesToPlay=1000;
+    static boolean simMode=true;
     public static int numOfMoves;
     static boolean neural = true;
+    static DQNPolicy QBrain;
     public static QLearning q;
     public static int sleep = 0;
     static boolean allWaysReplay=true;
@@ -30,10 +33,10 @@ public class Graph {
 	private static randomBot randBot = new randomBot();
 	public  static randomBot getRandomBot() {return randBot;}
     // chooses whether randBot will be player 1 or 2
-	private static boolean randBotPlayer1 = true;
+	private static boolean randBotPlayer1 = false;
 	public  static boolean getRandBotPlayer1() {return randBotPlayer1;}
 	// chooses whether randBot is active
-	private static boolean activateRandom=false;
+	private static boolean activateRandom=true;
     public static void setActivateRandom(boolean activateRandom) { Graph.activateRandom = activateRandom; }
     public  static boolean getActivateRandom() {return activateRandom;}
 	// Adjacency matrix
@@ -215,6 +218,7 @@ public class Graph {
             q = new QLearning();
             q2 = new QLearning2();
         }
+        QBrain=DQNPolicy.load("QLearning.bin");
     }
     public static ArrayList<ELine> availCheck(ArrayList<ELine> av){
       //  System.out.println("AV CHECK:");

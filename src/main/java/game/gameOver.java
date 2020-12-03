@@ -55,31 +55,54 @@ public class gameOver{
             Graph.q2.writeToFile();
         }
         if(Graph.allWaysReplay){
-            System.out.println("SCORE: "+Graph.getPlayer1Score()+" : "+Graph.getPlayer2Score());
-            if (Graph.getPlayer1Score() > Graph.getPlayer2Score()) {
-                Graph.setGamesWon1(Graph.getGamesWon1() + 1);
-            } else {
-                if (Graph.getPlayer2Score() > Graph.getPlayer1Score()) {
-                    Graph.setGamesWon2(Graph.getGamesWon2() + 1);
+            if(Graph.gamesToPlay==0) {
+                System.out.println("SCORE: " + Graph.getPlayer1Score() + " : " + Graph.getPlayer2Score());
+                if (Graph.getPlayer1Score() > Graph.getPlayer2Score()) {
+                    Graph.setGamesWon1(Graph.getGamesWon1() + 1);
+                } else {
+                    if (Graph.getPlayer2Score() > Graph.getPlayer1Score()) {
+                        Graph.setGamesWon2(Graph.getGamesWon2() + 1);
+                    }
+                    if (Graph.getPlayer2Score() == Graph.getPlayer1Score()) {
+                        drawCounter++;
+                    }
                 }
-                if(Graph.getPlayer2Score()==Graph.getPlayer1Score()){
-                    drawCounter++;
+                // System.out.println("1: "+Graph.getGamesWon1()+" 2: "+ Graph.getGamesWon2());
+                winRaten = 100.0 * ((double) (Graph.getGamesWon2()) / (double) (gamesPlayed));
+                drawRate = 100.0 * ((double) (drawCounter) / (double) (gamesPlayed));
+                FileWriter writer = new FileWriter("winR.txt", true);
+                writer.write(Double.toString(winRaten) + '\n');
+                writer.close();
+                FileWriter writer1 = new FileWriter("drawR.txt");
+                writer1.write(Double.toString(drawRate) + '\n');
+                if (Graph.getGamesWon2() != 0) {
+                    //    System.out.println("WIN PERCENTAGE: " +winRaten +" | DRAW PERCENTAGE: "+ drawRate);
+                }
+                Graph.player1Score = 0;
+                Graph.player2Score = 0;
+                 new GameBoard();
+            }else{
+                System.out.println(gamesPlayed);
+                if (Graph.getPlayer1Score() > Graph.getPlayer2Score()) {
+                    Graph.setGamesWon1(Graph.getGamesWon1() + 1);
+                } else {
+                    if (Graph.getPlayer2Score() > Graph.getPlayer1Score()) {
+                        Graph.setGamesWon2(Graph.getGamesWon2() + 1);
+                    }
+                    if (Graph.getPlayer2Score() == Graph.getPlayer1Score()) {
+                        drawCounter++;
+                    }
+                }
+                if(gamesPlayed<=Graph.gamesToPlay){
+                    Graph.player1Score = 0;
+                    Graph.player2Score = 0;
+                    new GameBoard();
+                }else{
+                    System.out.println("OVERALL SCORE: "+Graph.getGamesWon1()+":"+Graph.getGamesWon2());
+                    System.out.println("DRAWS: "+(Graph.gamesToPlay-(Graph.getGamesWon1()+Graph.getGamesWon2())));
+                    System.out.println("Illegal move: percentage: "+((double)(gameThread.illegalMoves)/(double)(gameThread.numOfMoves)));
                 }
             }
-            System.out.println("1: "+Graph.getGamesWon1()+" 2: "+ Graph.getGamesWon2());
-            winRaten= 100.0 * ((double)(Graph.getGamesWon2()) / (double)(gamesPlayed));
-            drawRate = 100.0 * ((double)(drawCounter)/(double)(gamesPlayed));
-            FileWriter writer = new FileWriter("winR.txt",true);
-            writer.write(Double.toString(winRaten)+'\n');
-            writer.close();
-            FileWriter writer1 = new FileWriter("drawR.txt");
-            writer1.write(Double.toString(drawRate)+'\n');
-            if(Graph.getGamesWon2()!=0) {
-                System.out.println("WIN PERCENTAGE: " +winRaten +" | DRAW PERCENTAGE: "+ drawRate);
-            }
-            Graph.player1Score=0;
-            Graph.player2Score=0;
-            new GameBoard();
         }else {
             frame.setVisible(false);
             next = new JFrame();

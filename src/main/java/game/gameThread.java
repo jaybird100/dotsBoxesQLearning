@@ -1,5 +1,8 @@
 package game;
 
+import Neural.testState;
+import org.nd4j.linalg.factory.Nd4j;
+
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,6 +10,8 @@ import java.util.ArrayList;
 import static game.Graph.*;
 
 public class gameThread extends Thread{
+    static int numOfMoves=0;
+    static int illegalMoves=0;
     public void run(){
         try{
             while(!checkFinished()) {
@@ -17,6 +22,10 @@ public class gameThread extends Thread{
                     sleep(500*sleep);
                 }
                 availableLines=availCheck(Graph.getAvailableLines());
+                if(neural&&player1Turn){
+                    testState state = new testState(matrix,player1Score,player2Score,numOfMoves,availableLines,player1Turn,getCounterBoxes(),getEdgeList());
+                    placeEdgeN(QBrain.nextAction(Nd4j.expandDims(Nd4j.create(state.toArray()), 0)));
+                }
                 if (Graph.getActivateRandom() && Graph.player1Turn == Graph.getRandBotPlayer1()) {
                     if(sleep>0) {
                         sleep(250*sleep);
@@ -48,14 +57,13 @@ public class gameThread extends Thread{
                         q2.turn();
                     }
                 }
-                if(!neural) {
-                    if (Graph.getNumOfMoves() < 1) {
-                        Graph.setNumOfMoves(1);
-                        if (Graph.player1Turn) {
-                            Graph.player1Turn = false;
-                        } else {
-                            Graph.player1Turn = true;
-                        }
+
+                if (Graph.getNumOfMoves() < 1) {
+                    Graph.setNumOfMoves(1);
+                    if (Graph.player1Turn) {
+                        Graph.player1Turn = false;
+                    } else {
+                        Graph.player1Turn = true;
                     }
                 }
             }
@@ -76,6 +84,41 @@ public class gameThread extends Thread{
             }
         }
         return true;
+    }
+    public static void placeEdgeN(int index){
+        numOfMoves++;
+        ELine line = Graph.getEdgeList().get(index).getEline();
+        if(line.isActivated()){
+            illegalMoves++;
+            line = availableLines.get((int)(Math.random()*availableLines.size()));
+        }
+        line.setActivated(true);
+        // make it black
+        line.setBackground(Color.BLACK);
+        line.repaint();
+        // set the adjacency matrix to 2, 2==is a line, 1==is a possible line
+        Graph.matrix[line.vertices.get(0).getID()][line.vertices.get(1).getID()] = 2;
+        Graph.matrix[line.vertices.get(1).getID()][line.vertices.get(0).getID()] = 2;
+        // gets an arrayList of each box the ELine creates. The box is an arrayList of 4 vertices.
+        ArrayList<ArrayList<Vertex>> boxes = checkBox(line);
+        if (boxes != null) {
+            for (ArrayList<Vertex> box : boxes) {
+                // looks through the counterBoxes arrayList and sets the matching one visible.
+                checkMatching(box);
+                // updates the score board
+                if (Graph.getPlayer1Turn()) {
+                    Graph.setPlayer1Score(Graph.getPlayer1Score() + 1);
+                    Graph.getScore1().setScore();
+                } else {
+                    Graph.setPlayer2Score(Graph.getPlayer2Score() + 1);
+                    Graph.getScore2().setScore();
+                }
+            }
+            // if every counterBox has been activated, the game is over
+        } else {
+            Graph.setNumOfMoves(0);
+            // switches turn. If randomBot is active switches to their turn.
+        }
     }
     public static void clickEdge(int index) throws InterruptedException {
         ELine line = Graph.getAvailableLines().get(index);
